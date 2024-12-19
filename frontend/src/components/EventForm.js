@@ -1,11 +1,13 @@
 import {
   Form,
+  redirect,
   useActionData,
   useNavigate,
   useNavigation,
 } from "react-router-dom";
 
 import classes from "./EventForm.module.css";
+import { backendUrl } from "../config";
 
 export default function EventForm({ method, event }) {
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ export default function EventForm({ method, event }) {
   }
 
   return (
-    <Form method="post" className={classes.form}>
+    <Form method={method} className={classes.form}>
       {data && data.errors && (
         <ul>
           {Object.values(data.errors).map((error) => (
@@ -77,4 +79,44 @@ export default function EventForm({ method, event }) {
       </div>
     </Form>
   );
+}
+
+export async function eventAction({ request, params }) {
+  const method = request.method;
+  const data = await request.formData();
+  const event = {
+    title: data.get("title"),
+    image: data.get("image"),
+    date: data.get("date"),
+    description: data.get("description"),
+  };
+
+  let url = `${backendUrl}/events`;
+
+  if (method === "PATCH") {
+    url += `/${params.id}`;
+  }
+
+  const response = await fetch(url, {
+    method,
+    body: JSON.stringify(event),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 422) {
+    return response;
+  }
+
+  if (!response.ok) {
+    throw new Response(
+      JSON.stringify({
+        message: "Failed to create event",
+      }),
+      { status: 500 }
+    );
+  }
+
+  return redirect("/events");
 }
