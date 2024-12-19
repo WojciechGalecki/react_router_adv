@@ -1,4 +1,4 @@
-import { useRouteLoaderData } from "react-router-dom";
+import { redirect, useRouteLoaderData } from "react-router-dom";
 
 import EventItem from "../components/EventItem";
 import { backendUrl } from "../config";
@@ -9,7 +9,7 @@ export default function EventDetailPage() {
   return <EventItem event={data.event} />;
 }
 
-export async function eventDetailsLoader({ request, params }) {
+export async function eventDetailsLoader({ params }) {
   const response = await fetch(`${backendUrl}/events/${params.id}`);
 
   if (!response.ok) {
@@ -21,5 +21,22 @@ export async function eventDetailsLoader({ request, params }) {
     );
   } else {
     return response;
+  }
+}
+
+export async function deleteEventAction({ request, params }) {
+  const response = await fetch(`${backendUrl}/events/${params.id}`, {
+    method: request.method,
+  });
+
+  if (!response.ok) {
+    throw new Response(
+      JSON.stringify({
+        message: "Failed to delete event",
+      }),
+      { status: 500 }
+    );
+  } else {
+    return redirect("/events");
   }
 }
