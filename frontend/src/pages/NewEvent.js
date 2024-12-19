@@ -24,6 +24,10 @@ export async function newEventAction({ request }) {
     },
   });
 
+  if (response.status === 422) {
+    return response;
+  }
+
   if (!response.ok) {
     throw new Response(
       JSON.stringify({
