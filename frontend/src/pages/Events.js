@@ -1,5 +1,7 @@
 import { useLoaderData } from "react-router-dom";
+
 import EventsList from "../components/EventsList";
+import { backendUrl } from "../config";
 
 export default function EventsPage() {
   const data = useLoaderData();
@@ -8,7 +10,7 @@ export default function EventsPage() {
 }
 
 export async function eventsLoader() {
-  const response = await fetch("http://localhost:8080/events");
+  const response = await fetch(`${backendUrl}/events`);
 
   if (!response.ok) {
     throw new Response(
