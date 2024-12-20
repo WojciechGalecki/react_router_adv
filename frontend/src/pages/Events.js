@@ -1,8 +1,8 @@
 import { Await, useLoaderData } from "react-router-dom";
+import { Suspense } from "react";
 
 import EventsList from "../components/EventsList";
 import { backendUrl } from "../config";
-import { Suspense } from "react";
 
 export default function EventsPage() {
   const { events } = useLoaderData();
@@ -16,7 +16,7 @@ export default function EventsPage() {
   );
 }
 
-async function loadEvents() {
+export async function loadEvents() {
   const response = await fetch(`${backendUrl}/events`);
 
   if (!response.ok) {
